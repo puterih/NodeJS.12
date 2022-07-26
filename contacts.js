@@ -1,3 +1,6 @@
+// belajar membuat aplikasi sederhana Command Line Interface (CLI) yang dapat mengelola data contact
+// CLI berjalan di terminal/ command line yg berbeda dengan aplikasi web
+
 const fs = require("fs");
 const chalk = require("chalk");
 const validator = require("validator");
@@ -25,6 +28,7 @@ const simpanContact = (nama, email, noHP) => {
 
   // Cek Duplikat
   const duplikat = contacts.find((contact) => contact.nama === nama);
+  // menggunakan method find ketika ketemu nama yg sesuai, penelusurannya akan berhenti
   if (duplikat) {
     console.log(chalk.red.inverse.bold("Contact sudah terdaftar, gunakan nama lain!"));
     return false;
@@ -55,7 +59,6 @@ const listContact = () => {
   console.log(chalk.yellow.inverse.bold("Daftar Kontak : "));
   // looping menggunakan forEach
   contacts.forEach((contact, i) => {
-    // untuk setiap contact yg ada di dalam contacts, kita butuh index, lalu lakukan cetak console
     console.log(`${i + 1}. ${contact.nama} - ${contact.noHP}`);
   });
 };
@@ -64,12 +67,14 @@ const detailContact = (nama) => {
   const contacts = loadContact();
 
   const contact = contacts.find((contact) => contact.nama.toLowerCase() === nama.toLowerCase());
-  // toLowerCase untuk kita bisa mencari nama menggunakan huruf kecil maupun besar
+
+  // pengecekan jika ada isinya maka tampilkan detailnya, jika tidak ada tampilkan pesan err/tidak ditemukan.
   if (!contact) {
     console.log(chalk.red.inverse.bold(`${nama} tidak ditemukan!`));
     return false;
   }
 
+  // jika ditemukan data nama yg dicari
   console.log(chalk.cyan.inverse.bold(contact.nama));
   console.log(contact.noHP);
   if (contact.email) {
@@ -77,5 +82,22 @@ const detailContact = (nama) => {
   }
 };
 
-// memanggil property nama, email, noHP di file app.js
-module.exports = { simpanContact, listContact, detailContact };
+//  Cara menghapus data berdasarkan nama pada aplikasi contact
+const deleteContact = (nama) => {
+  const contacts = loadContact();
+  const newContacts = contacts.filter(
+    // aturannya menggunakan method find, tetapi menggunakan method filter penelusurannya dilakukan terus sampai array nya selesai
+    (contact) => contact.nama.toLowerCase() !== nama.toLowerCase()
+  );
+
+  if (contacts.length === newContacts.length) {
+    console.log(chalk.red.inverse.bold(`${nama} tidak ditemukan!`));
+    return false;
+  }
+
+  fs.writeFileSync("data/contacts.json", JSON.stringify(newContacts));
+
+  console.log(chalk.green.inverse.bold(`data contact ${nama} berhasil dihapus!`));
+};
+
+module.exports = { simpanContact, listContact, detailContact, deleteContact };

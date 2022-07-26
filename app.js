@@ -1,3 +1,6 @@
+// belajar membuat aplikasi sederhana Command Line Interface (CLI) yang dapat mengelola data contact
+// CLI berjalan di terminal/ command line yg berbeda dengan aplikasi web
+
 // Mengambil argument dari command line
 const yargs = require("yargs");
 const contacts = require("./contacts");
@@ -55,17 +58,20 @@ yargs.command({
   },
 });
 
+// Menghapus contact berdasarkan nama
+yargs.command({
+  command: "delete",
+  describe: "Menghapus sebuah contact berdasarkan nama.",
+  builder: {
+    nama: {
+      describe: "Nama lengkap",
+      demandOption: true,
+      type: "string",
+    },
+  },
+  handler(argv) {
+    contacts.deleteContact(argv.nama);
+  },
+});
+
 yargs.parse();
-
-// const contacts = require("./contacts");
-
-// // menggunakan async await
-// const main = async () => {
-//   const nama = await contacts.tulisPertanyaan("Masukkan nama anda :");
-//   const email = await contacts.tulisPertanyaan("Masukkan email anda :");
-//   const noHP = await contacts.tulisPertanyaan("masukkan noHP anda :");
-
-//   contacts.simpanContact(nama, email, noHP);
-// };
-
-// main();
